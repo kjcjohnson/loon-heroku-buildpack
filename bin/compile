@@ -28,6 +28,8 @@ if [ $RESET_CACHE ]; then
   rm -rf $CACHE_DIR/*
 fi
 
+echo "-----> Lisp implementation selected: $CL_IMPL"
+
 case $CL_IMPL in
   sbcl)
     S3_BUCKET="sbcl-heroku"

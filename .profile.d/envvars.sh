@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "-----> Setting up the environment..."
+
 #This selects SBCL as the default server.
 #  Note that ccl is also another option...
 export CL_IMPL=${CL_IMPL:=sbcl}
