@@ -2,8 +2,8 @@
 
 # this pack is valid for apps with a heroku-setup.lisp in the root
 if [ -f $1/heroku-setup.lisp ]; then
-  echo "CLFramework"
-  exit 0
+    echo "Loon Framework"
+    exit 0
 else
-  exit 1
+    exit 1
 fi
