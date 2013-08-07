@@ -45,7 +45,7 @@
     (loop (sleep 60))))
 
 ;;; This loads the application
-(load (merge-pathnames "heroku-setup.lisp" *build-dir*))
+(load (merge-pathnames "init/heroku-setup.lisp" *build-dir*))
 
 (defun h-save-app (app-file)
   #+ccl (save-application app-file
