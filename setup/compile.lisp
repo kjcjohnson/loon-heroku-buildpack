@@ -33,15 +33,17 @@
 
 (ql:quickload "hunchentoot")
 
+(load (merge-pathnames "init/initialize.lisp" *build-dir*))
 ;;; App can redefine this to do runtime initializations
 (defun initialize-application ()
-  (load (merge-pathnames "init/initialize.lisp" *build-dir*)))
+  (initialize))
 
+(load (merge-pathnames "init/toplevel.lisp" *build-dir*))
 ;;; Default toplevel, app can redefine.
 (defun heroku-toplevel ()
   (let ((port (parse-integer (heroku-getenv "PORT"))))
     (format t "Listening on port ~A~%" port)
-    (load (merge-pathnames "init/toplevel.lisp" *build-dir*))
+    (toplevel port)
     (loop (sleep 60))))
 
 ;;; This loads the application
