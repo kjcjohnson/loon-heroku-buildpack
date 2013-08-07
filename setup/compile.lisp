@@ -16,7 +16,7 @@
 (defvar *build-dir* (env-var-to-path "BUILD_DIR"))
 (defvar *cache-dir* (pathname-directory (pathname (concatenate 'string (heroku-getenv "CACHE_DIR") "/"))))
 (defvar *buildpack-dir* (pathname-directory (pathname (concatenate 'string (heroku-getenv "BUILDPACK_DIR") "/"))))
-(defvar *cl-webserver* (read-from-string (heroku-getenv "CL_WEBSERVER")))
+;;;We need to use hunchentoot as our webserver.
 
 ;;; Tell ASDF to store binaries in the cache dir
 (heroku-setenv)
@@ -31,32 +31,17 @@
 	(funcall (symbol-function (find-symbol "INSTALL" (find-package "QUICKLISP-QUICKSTART")))
 		 :path (make-pathname :directory (pathname-directory ql-setup))))))
 
-(ecase *cl-webserver*
-  (hunchentoot (ql:quickload "hunchentoot"))
-  (aserve (progn
-            (asdf:clear-system "acl-compat")
-	    ;;; Load all .asd files in the repos subdirectory.  The compile script puts
-	    ;;; several systems in there, because we are using versions that are
-	    ;;; different from those in Quicklisp. (update: Can't just load the files apparently,
-	    ;;; have to add dirs to asdf:*central-registry*.  Blah.
-	    (let* ((asds (directory (make-pathname :directory  (append *cache-dir* '( "repos" :wild-inferiors))
-						   :name :wild
-						   :type "asd")))
-		   (directories (remove-duplicates (mapcar #'pathname-directory asds) :test #'equal)))
-	      (dolist (d directories)
-		(push (make-pathname :directory d) asdf:*central-registry*))))))
+(ql:quickload "hunchentoot"))
 
 ;;; App can redefine this to do runtime initializations
-(defun initialize-application ())
+(defun initialize-application ()
+  (load (merge-pathnames "init/initialize.lisp" *build-dir*)))
 
 ;;; Default toplevel, app can redefine.
 (defun heroku-toplevel ()
   (let ((port (parse-integer (heroku-getenv "PORT"))))
     (format t "Listening on port ~A~%" port)
-    (ecase *cl-webserver*
-      (hunchentoot (funcall (symbol-function (find-symbol "START" (find-package "HUNCHENTOOT")))
-		     (funcall 'make-instance (find-symbol "EASY-ACCEPTOR" (find-package "HUNCHENTOOT")) :port port)))
-      (aserve (funcall (symbol-function (find-symbol "START" (find-package "NET.ASERVE"))) :port port)))
+    (load (merge-pathnames "init/toplevel.lisp" *build-dir*))
     (loop (sleep 60))))
 
 ;;; This loads the application
