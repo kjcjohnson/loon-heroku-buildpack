@@ -31,7 +31,7 @@
 	(funcall (symbol-function (find-symbol "INSTALL" (find-package "QUICKLISP-QUICKSTART")))
 		 :path (make-pathname :directory (pathname-directory ql-setup))))))
 
-(ql:quickload "hunchentoot"))
+(ql:quickload "hunchentoot")
 
 ;;; App can redefine this to do runtime initializations
 (defun initialize-application ()
