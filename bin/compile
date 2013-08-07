@@ -47,8 +47,6 @@ case $CL_IMPL in
     exit 1
 esac
 
-    ;;
-
 echo "-----> Installing $CL_IMPL"
 if [ ! -d $CL_DIR ]; then
     echo "-----> Fetching $CL_IMPL"
