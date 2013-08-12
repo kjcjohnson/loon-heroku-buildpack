@@ -31,23 +31,17 @@
 	(funcall (symbol-function (find-symbol "INSTALL" (find-package "QUICKLISP-QUICKSTART")))
 		 :path (make-pathname :directory (pathname-directory ql-setup))))))
 
-(ql:quickload "hunchentoot")
-
 (load (merge-pathnames "init/initialize.lisp" *build-dir*))
 ;;; App can redefine this to do runtime initializations
-(defun initialize-application ()
-  (initialize))
+(defun initialize-application (buildp)
+  (initialize buildp))
 
 (load (merge-pathnames "init/toplevel.lisp" *build-dir*))
 ;;; Default toplevel, app can redefine.
 (defun heroku-toplevel ()
   (let ((port (parse-integer (heroku-getenv "PORT"))))
-    (format t "Listening on port ~A~%" port)
     (toplevel port)
     (loop (sleep 60))))
-
-;;; This loads the application
-(load (merge-pathnames "init/heroku-setup.lisp" *build-dir*))
 
 (defun h-save-app (app-file)
   #+ccl (save-application app-file
@@ -56,6 +50,8 @@
   #+sbcl (sb-ext:save-lisp-and-die app-file
         :toplevel #'heroku-toplevel
         :executable t))
+
+(initialize-application *build-dir*)
 
 (let ((app-file (format nil "~A/lispapp" (heroku-getenv "BUILD_DIR")))) ;must match path specified in bin/release
   (format t "Saving to ~A~%" app-file)
