@@ -31,6 +31,8 @@
 	(funcall (symbol-function (find-symbol "INSTALL" (find-package "QUICKLISP-QUICKSTART")))
 		 :path (make-pathname :directory (pathname-directory ql-setup))))))
 
+(quicklisp:quickload :hunchentoot)
+
 (load (merge-pathnames "init/initialize.lisp" *build-dir*))
 ;;; App can redefine this to do runtime initializations
 (defun initialize-application (buildp)
